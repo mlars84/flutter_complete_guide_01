@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './question.dart';
-import './answer.dart';
+import './quiz.dart';
+import './result.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,50 +12,69 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var _questionIndex = 0;
+  final _questions = const [
+    {
+      'questionText': 'What\'s your favorite color?',
+      'answers': [
+        {'text': 'black', 'score': 10},
+        {'text': 'red', 'score': 2},
+        {'text': 'green', 'score': 4},
+        {'text': 'white', 'score': 1}
+      ]
+    },
+    {
+      'questionText': 'What\'s your favorite animal?',
+      'answers': [
+        {'text': 'cat', 'score': 3},
+        {'text': 'dog', 'score': 5},
+        {'text': 'bird', 'score': 7},
+        {'text': 'fish', 'score': 1}
+      ]
+    },
+    {
+      'questionText': 'What\'s your favorite music genre?',
+      'answers': [
+        {'text': 'doom metal', 'score': 8},
+        {'text': 'electro', 'score': 2},
+        {'text': 'indie', 'score': 6},
+        {'text': 'old-time', 'score': 9}
+      ]
+    }
+  ];
 
-  void _answerQuestion() {
+  var _questionIndex = 0;
+  var _totalScore = 0;
+
+  void _answerQuestion(int score) {
+    _totalScore += score;
+    print(_totalScore);
     setState(() {
       _questionIndex = _questionIndex + 1;
-      print(_questionIndex);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      {
-        'questionText': 'What\'s your favorite color?',
-        'answers': ['black', 'red', 'green', 'white']
-      },
-      {
-        'questionText': 'What\'s your favorite animal?',
-        'answers': ['cat', 'dog', 'bird', 'fish']
-      },
-      {
-        'questionText': 'What\'s your favorite music genre?',
-        'answers': ['doom metal', 'electro', 'indie', 'old-time']
-      }
-    ];
-
     return MaterialApp(
         home: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Questions',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.w200),
+        appBar: AppBar(
+          title: Text(
+            'Questions',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w200),
+          ),
+          backgroundColor: Colors.black,
+          shadowColor: Colors.pink,
         ),
-        backgroundColor: Colors.black,
-        shadowColor: Colors.pink,
-      ),
-      body: Column(
-        children: [
-          Question(questions[_questionIndex]['questionText']),
-          ...(questions[_questionIndex]['answers'] as List<String>).map((answer) {
-            return Answer(_answerQuestion, answer);
-          }).toList()
-        ],
-      ),
-    ));
+        body: Container(
+          padding: EdgeInsets.all(20),
+          child: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questionsList: _questions[_questionIndex],
+              )
+            : Result(finalScore: _totalScore),
+        ),
+      )
+    );
   }
 }
